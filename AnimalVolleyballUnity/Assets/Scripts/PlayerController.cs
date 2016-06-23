@@ -23,12 +23,22 @@ public class PlayerController : MonoBehaviour
 	protected float viewAngleY;
 	protected float camHorizontalInput;
 	protected float camVerticalInput;
+	protected float mouseSensitivity = 80f;
 
 	//Public
 	//public Transform CameraPivot { get { return cameraPivot; } }
 	//public Transform CameraPosObject { get { return cameraPosObject; } }
 	public float CamHorizontal { get { return camHorizontalInput; } }
 	public float CamVertical { get { return camVerticalInput; } }
+	public float MouseSensitivity
+	{
+		get { return mouseSensitivity; }
+		set
+		{
+			value = Mathf.Clamp(value, 20, 200);
+			mouseSensitivity = value;
+		}
+	}
 
 	void Start()
 	{
