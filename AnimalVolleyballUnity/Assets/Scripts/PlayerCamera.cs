@@ -4,6 +4,7 @@ public class PlayerCamera : MonoBehaviour
 {
 	[Header("References")]
 	//Private
+	Camera cameraComponent;
 	[SerializeField] PlayerController owner;
 	[SerializeField] Transform target;
 	[SerializeField] Volleyball ball;
@@ -18,13 +19,14 @@ public class PlayerCamera : MonoBehaviour
 	//Private
 	[SerializeField] State state = State.LookAtTarget;
 	float minDistance = 0f;
-	float maxDistance = 5;
-	[SerializeField] float cameraDistance = 0.5f;
-	[SerializeField] float swivelSpeed = 3f;
+	float maxDistance = 5f;
+	[SerializeField] float targetPanSpeed = 3f;
 	[SerializeField] float stiffness = 5f;
+	[SerializeField] float height = 0f;
+	[SerializeField] float cameraDistance = 0.5f;
+	[SerializeField] float fov = 60f;
 	float viewAngleX;
 	float viewAngleY;
-	[SerializeField] float height = 0f;
 	float heightRange = 1f;
 
 	//Public
@@ -47,6 +49,16 @@ public class PlayerCamera : MonoBehaviour
 		}
 	}
 
+	public float FOV
+	{
+		get { return fov; }
+		set
+		{
+			value = Mathf.Clamp(value, 10f, 120f);
+			fov = value;
+		}
+	}
+
 	public enum State
 	{
 		PlayerPivot,
@@ -58,6 +70,7 @@ public class PlayerCamera : MonoBehaviour
 
 	void Start()
 	{
+		cameraComponent = GetComponent<Camera>();
 		if (!owner) { print("Warning: No camera owner assigned to " + transform.root.name); }
 		viewAngleX = cameraPivot.eulerAngles.y;
 		viewAngleY = cameraPivot.eulerAngles.x;
@@ -76,6 +89,8 @@ public class PlayerCamera : MonoBehaviour
 
 					viewAngleX += camHorizontalInput * owner.MouseSensitivity * Time.deltaTime;
 					viewAngleY += -camVerticalInput * owner.MouseSensitivity * Time.deltaTime;
+
+					viewAngleY = Mathf.Clamp(viewAngleY, -50f, 60f);
 
 					Vector3 camRotation = new Vector3(viewAngleY, viewAngleX, 0f);
 
@@ -99,7 +114,7 @@ public class PlayerCamera : MonoBehaviour
 				if (target)
 				{
 					Vector3 dirToTarget = (target.transform.position - transform.position).normalized;
-					transform.forward = Vector3.Lerp(transform.forward, dirToTarget, Time.deltaTime * swivelSpeed);
+					transform.forward = Vector3.Lerp(transform.forward, dirToTarget, targetPanSpeed * Time.deltaTime);
 				}
 				break;
 			case State.Free:
@@ -119,10 +134,18 @@ public class PlayerCamera : MonoBehaviour
 				camPos.y = Height;
 				cameraPivot.transform.localPosition = camPos;
 
+				//FOV
+				cameraComponent.fieldOfView = fov;
+
 				//Camera distance
 				Vector3 pivotToCam = transform.position - cameraPivot.transform.position;
 				pivotToCam.Normalize();
-				transform.position = Vector3.Lerp(cameraPivot.position, cameraPivot.position + (pivotToCam * maxDistance), CameraDistance);
+
+				float maxDist = maxDistance;// + 60 - (fov);
+				//print(maxDist);
+
+				//transform.position = Vector3.Lerp(cameraPivot.position, cameraPivot.position + (pivotToCam * maxDist), CameraDistance);
+				transform.position = cameraPivot.position + (pivotToCam * CameraDistance);
 				break;
 		}
 	}
