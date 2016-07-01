@@ -5,11 +5,11 @@ public class PlayerController : MonoBehaviour
 {
 	//Private
 	[Header("References")]
+	protected Rigidbody rb;
+	protected Animator anim;
 	[SerializeField] protected PuppetMaster puppet;
 	[SerializeField] protected Volleyball ball;
 	[SerializeField] protected PlayerCamera cam;
-	protected Rigidbody rb;
-	protected Animator anim;
 
 	[Header("Movement")]
 	//Private
@@ -26,8 +26,6 @@ public class PlayerController : MonoBehaviour
 	protected float mouseSensitivity = 80f;
 
 	//Public
-	//public Transform CameraPivot { get { return cameraPivot; } }
-	//public Transform CameraPosObject { get { return cameraPosObject; } }
 	public float CamHorizontal { get { return camHorizontalInput; } }
 	public float CamVertical { get { return camVerticalInput; } }
 	public float MouseSensitivity
@@ -51,10 +49,8 @@ public class PlayerController : MonoBehaviour
 		anim = GetComponent<Animator>();
 
 		if (!puppet) { print("Puppetmaster not assigned"); }
-		if (!ball) { ball = GameObject.FindObjectOfType<Volleyball>(); }
 		if (!cam) { print("Camera not assigned"); }
-		//if (!cameraPivot) { cameraPivot = transform.FindChild("Camera Pivot Point"); }
-		//if (!cameraPosObject && cameraPivot) { cameraPosObject = cameraPivot.FindChild("Camera Position Object"); }
+		if (!ball) { print("Ball not assigned."); }
 	}
 
 	protected virtual void MovePhysics()
@@ -69,18 +65,13 @@ public class PlayerController : MonoBehaviour
 			forwardDir = cam.transform.forward;
 		}
 
-		//if (ball)	//And if jumping?
-		//{
-				
-		//}
-
 		forwardDir.y = transform.forward.y;
 
 		Vector3 sideDir = Quaternion.AngleAxis(90, Vector3.up) * forwardDir;
 
 		moveVector = (forwardDir * inputZ) + (sideDir * inputX);
 		moveVector.Normalize();
-		Debug.DrawRay(transform.position, moveVector);
+
 		rb.MovePosition(transform.position + moveVector * moveSpeed * Time.deltaTime);
 	}
 
@@ -121,6 +112,12 @@ public class PlayerController : MonoBehaviour
 		}
 	}
 
+	protected virtual void SyncAnimatorVars()
+	{
+		anim.SetFloat("Forward", Input.GetAxis("Vertical"));
+		anim.SetFloat("Side", Input.GetAxis("Horizontal"));
+	}
+
 	protected virtual void BaseFixedUpdate()
 	{
 		MovePhysics();
@@ -129,6 +126,7 @@ public class PlayerController : MonoBehaviour
 	protected virtual void BaseUpdate()
 	{
 		Move();
+		SyncAnimatorVars();
 	}
 
 	void FixedUpdate()
