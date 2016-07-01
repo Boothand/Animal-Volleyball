@@ -1,16 +1,16 @@
 ﻿using UnityEngine;
 
-public class HorseController : PlayerController
+public class HorseController : VolleyballPlayer
 {
 	
 
-	void Start()
+	protected override void BaseStart()
 	{
-		BaseStart();
+		base.BaseStart();
 	}
 	
-	void Update()
+	protected override void BaseUpdate()
 	{
-		BaseUpdate();
+		base.BaseUpdate();
 	}
 }
