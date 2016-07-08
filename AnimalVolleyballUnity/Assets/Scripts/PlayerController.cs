@@ -8,7 +8,6 @@ public class PlayerController : MonoBehaviour
 	protected Rigidbody rb;
 	protected Animator anim;
 	[SerializeField] protected PuppetMaster puppet;
-	[SerializeField] protected Volleyball ball;
 	[SerializeField] protected PlayerCamera cam;
 
 	[Header("Movement")]
@@ -38,19 +37,26 @@ public class PlayerController : MonoBehaviour
 		}
 	}
 
+	void Awake()
+	{
+		BaseAwake();
+	}
+
 	void Start()
 	{
 		BaseStart();
 	}
 
-	protected virtual void BaseStart()
+	protected virtual void BaseAwake()
 	{
 		rb = GetComponent<Rigidbody>();
 		anim = GetComponent<Animator>();
+	}
 
+	protected virtual void BaseStart()
+	{
 		if (!puppet) { print("Puppetmaster not assigned"); }
 		if (!cam) { print("Camera not assigned"); }
-		if (!ball) { print("Ball not assigned."); }
 	}
 
 	protected virtual void MovePhysics()
@@ -112,7 +118,7 @@ public class PlayerController : MonoBehaviour
 		}
 	}
 
-	protected virtual void SyncAnimatorVars()
+	protected virtual void SyncAnimationVars()
 	{
 		anim.SetFloat("Forward", Input.GetAxis("Vertical"));
 		anim.SetFloat("Side", Input.GetAxis("Horizontal"));
@@ -126,7 +132,7 @@ public class PlayerController : MonoBehaviour
 	protected virtual void BaseUpdate()
 	{
 		Move();
-		SyncAnimatorVars();
+		SyncAnimationVars();
 	}
 
 	void FixedUpdate()

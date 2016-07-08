@@ -4,18 +4,18 @@ public class BallDetectionBox : MonoBehaviour
 {
 	//Private
 	Volleyball ball;
-	[SerializeField] bool ballInBox;
+	[SerializeField] bool hasBall;
 
 	//Public
 	public Volleyball Ball { get { return ball; } }
-	public bool BallInBox { get { return ballInBox; } }
+	public bool HasBall { get { return hasBall; } }
 
 	void OnTriggerEnter(Collider col)
 	{
 		if (col.GetComponent<Volleyball>())
 		{
 			ball = col.GetComponent<Volleyball>();
-			ballInBox = true;
+			hasBall = true;
 		}
 	}
 
@@ -24,7 +24,7 @@ public class BallDetectionBox : MonoBehaviour
 		if (col.GetComponent<Volleyball>())
 		{
 			ball = null;
-			ballInBox = false;
+			hasBall = false;
 		}
 	}
 }
